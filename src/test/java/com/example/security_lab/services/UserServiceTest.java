@@ -23,16 +23,16 @@ public class UserServiceTest {
     @BeforeEach
     public void setUp(){
         user = new User();
-        user.setUsername("Test");
+        user.setUsername("Test2");
         user.setPassword("1234");
         System.out.println("Usuario Inicial: " + user);
 
         userService.saveUser(user);
     }
-        @AfterEach
-public void tearDown(){
-        userRepository.delete(user);
-}
+        //@AfterEach
+//public void tearDown(){
+        //userRepository.delete(user);
+//}
     @Test
     @DisplayName("Encriptacion Correcta")
     public void passwordEncryption(){

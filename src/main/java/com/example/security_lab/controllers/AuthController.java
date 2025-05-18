@@ -26,27 +26,37 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
+
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
-        Optional<User> optionalUser = userService.getByUsername(user.getUsername());
+        Optional<User> optionalUser = userService.getByUserName(user.getUsername());
 
         if (optionalUser.isPresent()) {
+
             User foundUser = optionalUser.get();
+
+
             if (userService.passwordIsValid(foundUser, user.getPassword())) {
+
 
 
                 List<ERole> roleNames = foundUser.getRole().stream()
                         .map(role -> role.getName())
                         .collect(Collectors.toList());
-                String token = jwtService.generateToken(foundUser.getUsername(),roleNames.toString());
+
+
+
+                String token = jwtService.generateToken(foundUser.getUsername(), roleNames.toString());
+
                 return ResponseEntity.ok(token);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Incorrecto");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login incorrecto");
             }
 
-            }else{
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No encontrado");
-            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("usuario no encontrado");
+        }
 
     }
+
 }

@@ -32,42 +32,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+
         String token = authHeader.substring(7);
 
-        if (!jwtService.validateToken(token)){
+
+        if(!jwtService.validateToken(token)){
             filterChain.doFilter(request, response);
             return;
         }
+
+
+
         String username = jwtService.extractUsername(token);
         String rolesString = jwtService.extractRoles(token);
 
-        // Convert the roles string to a list of Spring Security authorities
         Collection<GrantedAuthority> authorities = extractAuthorities(rolesString);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
-        // Creamos la autenticación dentro del contexto de nuestra app
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Pasamos al siguiente filtro
+
         filterChain.doFilter(request, response);
     }
 
     private Collection<GrantedAuthority> extractAuthorities(String rolesString) {
-        // Process the roles string. Example: "[ROLE_ADMIN, ROLE_USER]"
+
         if (rolesString == null || rolesString.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Remove brackets and split by commas
+
         String roles = rolesString.replace("[", "").replace("]", "");
         String[] roleArray = roles.split(",");
 
         return Arrays.stream(roleArray)
-                .map(String::trim) // Remove spaces
-                .map(SimpleGrantedAuthority::new) // We'll have roles in the correct format for Spring Security to recognize them
+                .map(String::trim)
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
-}
 
+}

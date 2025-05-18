@@ -12,14 +12,15 @@ import java.util.Date;
 public class JwtService {
     private static final String SECRET = "super_secreto123";
 
-    public String generateToken(String username, String role){
+    public String generateToken(String username, String roles){
         return JWT.create()
                 .withSubject(username)
-                .withClaim("role", role)
+                .withClaim("roles", roles)
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis()+1000*60*60*24))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // el token caduca en una hora
                 .sign(Algorithm.HMAC256(SECRET));
     }
+
     public boolean validateToken(String token) {
         try {
             JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
@@ -28,12 +29,16 @@ public class JwtService {
             return false;
         }
     }
+
+
+
     public String extractUsername(String token) {
         return JWT.require(Algorithm.HMAC256(SECRET))
                 .build()
                 .verify(token)
                 .getSubject();
     }
+
 
     public String extractRoles(String token) {
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256(SECRET))
@@ -42,5 +47,4 @@ public class JwtService {
 
         return jwt.getClaim("roles").asString();
     }
-
 }
